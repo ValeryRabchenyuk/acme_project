@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+"""Приложение для управления статичными страницами"""
 
 
 class PagesConfig(AppConfig):
