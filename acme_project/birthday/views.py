@@ -2,6 +2,8 @@ from django.shortcuts import render
 
 # Импортируем класс BirthdayForm, чтобы создать экземпляр формы.
 from .forms import BirthdayForm
+# Импортируем модель дней рождения.
+from .models import Birthday
 
 # Импортируем из utils.py функцию для подсчёта дней.
 from .utils import calculate_birthday_countdown
@@ -26,6 +28,13 @@ def birthday(request):
         # Обновляем словарь контекста: добавляем в него новый элемент.
         context.update({'birthday_countdown': birthday_countdown})
 
-    
     # Указываем нужный шаблон и передаём в него словарь контекста.
     return render(request, 'birthday/birthday.html', context)
+
+
+def birthday_list(request):
+    # Получаем все объекты модели Birthday из БД.
+    birthdays = Birthday.objects.all()
+    # Передаём их в контекст шаблона.
+    context = {'birthdays': birthdays}
+    return render(request, 'birthday/birthday_list.html', context) 
