@@ -8,6 +8,7 @@ urlpatterns = [
     path('', views.BirthdayCreateView.as_view(), name='create'),  # Новый маршрут через CBV           БЫЛО views.birthday
     # Новый маршрут.            БЫЛО views.birthday_list
     path('list/', views.BirthdayListView.as_view(), name='list'),
+    path('<int:pk>/', views.BirthdayDetailView.as_view(), name='detail'), # Новый путь отображения отдельного объекта(даты) 
     # редактирование записей 
     path('<int:pk>/edit/', views.BirthdayUpdateView.as_view(), name='edit'),  # Новый маршрут через CBV           БЫЛО views.birthday
     # удаление

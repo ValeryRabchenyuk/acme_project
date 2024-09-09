@@ -3,8 +3,9 @@ from django.core.paginator import Paginator
 
 from django.shortcuts import get_object_or_404, redirect, render
 
-from django.views.generic import CreateView, DeleteView, ListView, UpdateView
-from django.urls import reverse_lazy
+from django.views.generic import (
+    CreateView, DeleteView, DetailView, ListView, UpdateView
+)from django.urls import reverse_lazy
 
 # Импортируем класс BirthdayForm, чтобы создать экземпляр формы.
 from .forms import BirthdayForm
@@ -15,23 +16,62 @@ from .models import Birthday
 from .utils import calculate_birthday_countdown
 
 
-# НОВЫЙ КЛАСС MIXIN.
+class BirthdayDetailView(DetailView):
+    model = Birthday
+
+    def get_context_data(self, **kwargs):               # Переопределение  словаря контекста 
+        # Получаем словарь контекста:
+        context = super().get_context_data(**kwargs)
+        # Добавляем в словарь новый ключ:
+        context['birthday_countdown'] = calculate_birthday_countdown(
+            # Дату рождения берём из объекта в словаре context:
+            self.object.birthday
+        )
+        # Возвращаем словарь контекста.
+        return context 
+    
+
+# ОЧЕРЕДНАЯ ПЕРЕКОМПАНОВКА с миксинами          Есть и ещё один вариант. Можно не создавать миксин BirthdayFormMixin, а переименовать шаблон birthday/birthday.html в birthday/birthday_form.html — именно это название ожидает по умолчанию класс CreateView. 
+# В этом случае в классе BirthdayCreateView название шаблона можно вообще не указывать, а в классах для создания и редактирования объектов указать не pass, а form_class = BirthdayForm. 
 class BirthdayMixin:
     model = Birthday
-    form_class = BirthdayForm
-    template_name = 'birthday/birthday.html'
     success_url = reverse_lazy('birthday:list')
 
 
-# Добавляем миксин первым по списку родительских классов.
-class BirthdayCreateView(BirthdayMixin, CreateView):
-    # Не нужно описывать атрибуты: все они унаследованы от BirthdayMixin.
+class BirthdayFormMixin:
+    form_class = BirthdayForm
+    template_name = 'birthday/birthday.html'
+
+
+class BirthdayCreateView(BirthdayMixin, BirthdayFormMixin, CreateView):
     pass
 
 
-class BirthdayUpdateView(BirthdayMixin, UpdateView):
-    # И здесь все атрибуты наследуются от BirthdayMixin.
+class BirthdayUpdateView(BirthdayMixin, BirthdayFormMixin, UpdateView):
     pass
+
+
+class BirthdayDeleteView(BirthdayMixin, DeleteView):
+    pass
+
+
+# НОВЫЙ КЛАСС MIXIN.
+# class BirthdayMixin:
+#     model = Birthday
+#     form_class = BirthdayForm
+#     template_name = 'birthday/birthday.html'
+#     success_url = reverse_lazy('birthday:list')
+
+
+# # Добавляем миксин первым по списку родительских классов.
+# class BirthdayCreateView(BirthdayMixin, CreateView):
+#     # Не нужно описывать атрибуты: все они унаследованы от BirthdayMixin.
+#     pass
+
+
+# class BirthdayUpdateView(BirthdayMixin, UpdateView):
+#     # И здесь все атрибуты наследуются от BirthdayMixin.
+#     pass
 
 
 
