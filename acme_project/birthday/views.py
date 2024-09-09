@@ -1,11 +1,12 @@
 # Импортируем класс пагинатора.
-from django.core.paginator import Paginator
+# from django.core.paginator import Paginator
 
-from django.shortcuts import get_object_or_404, redirect, render
+# from django.shortcuts import get_object_or_404, redirect, render
 
 from django.views.generic import (
     CreateView, DeleteView, DetailView, ListView, UpdateView
-)from django.urls import reverse_lazy
+)
+from django.urls import reverse_lazy
 
 # Импортируем класс BirthdayForm, чтобы создать экземпляр формы.
 from .forms import BirthdayForm
@@ -15,6 +16,7 @@ from .models import Birthday
 # Импортируем из utils.py функцию для подсчёта дней.
 from .utils import calculate_birthday_countdown
 
+# ИДЁТ ПОСЛЕДНИМ В СПИСКЕ КЛАССОВ 
 
 class BirthdayDetailView(DetailView):
     model = Birthday
@@ -33,26 +35,27 @@ class BirthdayDetailView(DetailView):
 
 # ОЧЕРЕДНАЯ ПЕРЕКОМПАНОВКА с миксинами          Есть и ещё один вариант. Можно не создавать миксин BirthdayFormMixin, а переименовать шаблон birthday/birthday.html в birthday/birthday_form.html — именно это название ожидает по умолчанию класс CreateView. 
 # В этом случае в классе BirthdayCreateView название шаблона можно вообще не указывать, а в классах для создания и редактирования объектов указать не pass, а form_class = BirthdayForm. 
-class BirthdayMixin:
+                                                                    # ВТОРОЙ КЛАСС
+# УБРАЛИ ИЗ-ЗА  get_absolute_url(self): в моделях
+# class BirthdayMixin:          
+#     model = Birthday
+#     success_url = reverse_lazy('birthday:list')
+
+
+# class BirthdayFormMixin:           УБРАЛИ ПОСЛЕ ДитэйлВью
+#     form_class = BirthdayForm
+#     template_name = 'birthday/birthday.html'
+
+
+class BirthdayCreateView(CreateView):        # БЫЛ еще BirthdayFormMixin и BirthdayMixin в ()
     model = Birthday
-    success_url = reverse_lazy('birthday:list')
-
-
-class BirthdayFormMixin:
     form_class = BirthdayForm
-    template_name = 'birthday/birthday.html'
 
 
-class BirthdayCreateView(BirthdayMixin, BirthdayFormMixin, CreateView):
-    pass
+class BirthdayUpdateView(UpdateView): # БЫЛ еще BirthdayFormMixin и BirthdayMixin в ()
+    model = Birthday
+    form_class = BirthdayForm
 
-
-class BirthdayUpdateView(BirthdayMixin, BirthdayFormMixin, UpdateView):
-    pass
-
-
-class BirthdayDeleteView(BirthdayMixin, DeleteView):
-    pass
 
 
 # НОВЫЙ КЛАСС MIXIN.
@@ -163,7 +166,7 @@ class BirthdayDeleteView(BirthdayMixin, DeleteView):
 class BirthdayDeleteView(DeleteView):
     model = Birthday
     # template_name = 'birthday/birthday.html'       УБРАЛИ вызов шаблона, п/ч есть шаблон с именем, которое ожидает класс DeleteView
-    success_url = reverse_lazy('birthday:list') 
+    success_url = reverse_lazy('birthday:list')
 
 # def delete_birthday(request, pk):
 #     # Получаем объект модели или выбрасываем 404 ошибку.
@@ -184,7 +187,7 @@ class BirthdayDeleteView(DeleteView):
 
 # НОВАЯ ВЬЮХА 
 
-# Наследуем класс от встроенного ListView:
+# Наследуем класс от встроенного ListView:                            ПЕРВЫЙ КЛАСС
 class BirthdayListView(ListView):
     # Указываем модель, с которой работает CBV...
     model = Birthday

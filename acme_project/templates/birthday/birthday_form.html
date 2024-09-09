@@ -1,4 +1,32 @@
+
+<!-- ВСЁ СНЕСЛИ ПОСЛЕ ДитейлВЬЮ и укоротили 
+ушло всё лишнее — условия, связанные с удалением объекта, приветствие и вывод количества дней до дня рождения-->
+
 {% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+  {% if "/edit/" in request.path %}
+    <h1>Редактировать запись {{ form.instance.pk }}</h1> 
+  {% else %}
+    <h1>Создать запись</h1>
+  {% endif %}
+  <div class="card col-4">
+    <div class="card-header">
+      Калькулятор ожидания дня рождения
+    </div>
+    <div class="card-body">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% bootstrap_button button_type="submit" content="Отправить" %}
+      </form>
+    </div>
+  </div>
+{% endblock content %}
+
+
+{% comment %} {% extends "base.html" %}
 <!-- Подключаем библиотеку django_bootstrap5. -->
 {% load django_bootstrap5 %}
 
@@ -41,4 +69,4 @@
       {% endif %}
     {% endif %}
   {% endwith %}  <!-- Когда заканчивается область шаблона, где нужна переменная data,  закрываем тег with ПЕРЕМЕННАЯ УБРАНА -->
-{% endblock %}
+{% endblock %} {% endcomment %}
