@@ -3,7 +3,7 @@ from django.core.paginator import Paginator
 
 from django.shortcuts import get_object_or_404, redirect, render
 
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 from django.urls import reverse_lazy
 
 # Импортируем класс BirthdayForm, чтобы создать экземпляр формы.
@@ -119,22 +119,27 @@ class BirthdayUpdateView(BirthdayMixin, UpdateView):
 #     return render(request, 'birthday/birthday.html', context)
 
 
-                                                    # УДАЛЕНИЕ
-def delete_birthday(request, pk):
-    # Получаем объект модели или выбрасываем 404 ошибку.
-    instance = get_object_or_404(Birthday, pk=pk)
-    # В форму передаём только объект модели;
-    # передавать в форму параметры запроса не нужно.
-    form = BirthdayForm(instance=instance)
-    context = {'form': form}
-    # Если был получен POST-запрос...
-    if request.method == 'POST':
-        # ...удаляем объект:
-        instance.delete()
-        # ...и переадресовываем пользователя на страницу со списком записей.
-        return redirect('birthday:list')
-    # Если был получен GET-запрос — отображаем форму.
-    return render(request, 'birthday/birthday.html', context)
+                                                    # НОВОЕ УДАЛЕНИЕ CBV
+class BirthdayDeleteView(DeleteView):
+    model = Birthday
+    # template_name = 'birthday/birthday.html'       УБРАЛИ вызов шаблона, п/ч есть шаблон с именем, которое ожидает класс DeleteView
+    success_url = reverse_lazy('birthday:list') 
+
+# def delete_birthday(request, pk):
+#     # Получаем объект модели или выбрасываем 404 ошибку.
+#     instance = get_object_or_404(Birthday, pk=pk)
+#     # В форму передаём только объект модели;
+#     # передавать в форму параметры запроса не нужно.
+#     form = BirthdayForm(instance=instance)
+#     context = {'form': form}
+#     # Если был получен POST-запрос...
+#     if request.method == 'POST':
+#         # ...удаляем объект:
+#         instance.delete()
+#         # ...и переадресовываем пользователя на страницу со списком записей.
+#         return redirect('birthday:list')
+#     # Если был получен GET-запрос — отображаем форму.
+#     return render(request, 'birthday/birthday.html', context)
 
 
 # НОВАЯ ВЬЮХА 
