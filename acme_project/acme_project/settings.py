@@ -96,3 +96,5 @@ EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
 # После логина будем перенаправлять пользователя на главную страницу — homepage.
 LOGIN_REDIRECT_URL = 'pages:homepage'
+# Адрес страницы логина
+LOGIN_URL = 'login' 
