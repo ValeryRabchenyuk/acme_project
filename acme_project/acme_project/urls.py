@@ -3,6 +3,8 @@ from django.urls import include, path
 
 urlpatterns = [
     path('', include('pages.urls')),
+        # Подключаем urls.py приложения для работы с пользователями.
+    path('auth/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
     path('birthday/', include('birthday.urls')),
 ]
