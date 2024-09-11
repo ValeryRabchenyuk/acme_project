@@ -1,7 +1,7 @@
 # Импортируем класс пагинатора.
 # from django.core.paginator import Paginator
-
-# from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect #, render
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.views.generic import (
@@ -10,9 +10,9 @@ from django.views.generic import (
 from django.urls import reverse_lazy
 
 # Импортируем класс BirthdayForm, чтобы создать экземпляр формы.
-from .forms import BirthdayForm
+from .forms import BirthdayForm, CongratulationForm
 # Импортируем модель дней рождения.
-from .models import Birthday
+from .models import Birthday, Congratulation
 
 # Импортируем из utils.py функцию для подсчёта дней.
 from .utils import calculate_birthday_countdown
@@ -30,9 +30,17 @@ class BirthdayDetailView(DetailView):
             # Дату рождения берём из объекта в словаре context:
             self.object.birthday
         )
+        # Записываем в переменную form пустой объект формы.
+        context['form'] = CongratulationForm()
+        # Запрашиваем все поздравления для выбранного дня рождения.
+        context['congratulations'] = (
+            # Дополнительно подгружаем авторов комментариев,
+            # чтобы избежать множества запросов к БД.
+            self.object.congratulations.select_related('author')
+        )
         # Возвращаем словарь контекста.
-        return context 
-    
+        return context
+
 
 # ОЧЕРЕДНАЯ ПЕРЕКОМПАНОВКА с миксинами          Есть и ещё один вариант. Можно не создавать миксин BirthdayFormMixin, а переименовать шаблон birthday/birthday.html в birthday/birthday_form.html — именно это название ожидает по умолчанию класс CreateView. 
 # В этом случае в классе BirthdayCreateView название шаблона можно вообще не указывать, а в классах для создания и редактирования объектов указать не pass, а form_class = BirthdayForm. 
@@ -220,3 +228,24 @@ class BirthdayListView(ListView):
 #     # объект страницы пагинатора
 #     context = {'page_obj': page_obj}  #{'birthdays': birthdays} <--- было     # Передаём их в контекст шаблона.
 #     return render(request, 'birthday/birthday_list.html', context)
+
+# Будут обработаны POST-запросы только от залогиненных пользователей.
+
+
+@login_required
+def add_comment(request, pk):
+    # Получаем объект дня рождения или выбрасываем 404 ошибку.
+    birthday = get_object_or_404(Birthday, pk=pk)
+    # Функция должна обрабатывать только POST-запросы.
+    form = CongratulationForm(request.POST)
+    if form.is_valid():
+        # Создаём объект поздравления, но не сохраняем его в БД.
+        congratulation = form.save(commit=False)
+        # В поле author передаём объект автора поздравления.
+        congratulation.author = request.user
+        # В поле birthday передаём объект дня рождения.
+        congratulation.birthday = birthday
+        # Сохраняем объект в БД.
+        congratulation.save()
+    # Перенаправляем пользователя назад, на страницу дня рождения.
+    return redirect('birthday:detail', pk=pk)

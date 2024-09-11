@@ -1,10 +1,9 @@
-# Добавьте новые строчки с импортами классов.
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic.edit import CreateView
 
 from django.contrib import admin
 from django.urls import include, path
-# К импортам из django.urls добавьте импорт функции reverse_lazy
+
 from django.urls import include, path, reverse_lazy
 
 urlpatterns = [

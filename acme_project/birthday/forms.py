@@ -5,8 +5,12 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from .models import Birthday
+# Импортируем модель поздравления.
+from .models import Birthday, Congratulation
+
 # Импорт функции для отправки почты.
 from django.core.mail import send_mail
+
 
 # Множество с именами участников Ливерпульской четвёрки.
 
@@ -51,6 +55,11 @@ class BirthdayForm(forms.ModelForm):
             ) 
 
 
+class CongratulationForm(forms.ModelForm):
+    
+    class Meta:
+        model = Congratulation
+        fields = ('text',) 
 
 
     # # Импортируем функцию-валидатор.

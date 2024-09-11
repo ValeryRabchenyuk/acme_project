@@ -27,4 +27,20 @@ class Birthday(models.Model):
 
     def get_absolute_url(self):
         # С помощью функции reverse() возвращаем URL объекта.
-        return reverse('birthday:detail', kwargs={'pk': self.pk}) 
+        return reverse('birthday:detail', kwargs={'pk': self.pk})
+
+
+# комментированиe
+class Congratulation(models.Model):
+    text = models.TextField('Текст поздравления')
+    birthday = models.ForeignKey(     # внешних ключ — указывает, к какому объекту Birthday относится поздравление
+        Birthday,
+        # если автор поздравления или запись о дне рождения будут удалены — все привязанные к ним поздравления должны автоматически удаляться:
+        on_delete=models.CASCADE,
+        related_name='congratulations',
+    )
+    created_at = models.DateTimeField(auto_now_add=True) # временем создания поздравления
+    author = models.ForeignKey(User, on_delete=models.CASCADE)    # внешних ключ — кто автор поздравления
+
+    class Meta:
+        ordering = ('created_at',)

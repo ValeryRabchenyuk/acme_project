@@ -13,4 +13,5 @@ urlpatterns = [
     path('<int:pk>/edit/', views.BirthdayUpdateView.as_view(), name='edit'),  # Новый маршрут через CBV           БЫЛО views.birthday
     # удаление
     path('<int:pk>/delete/', views.BirthdayDeleteView.as_view(), name='delete'),  # Новый маршрут через CBV           БЫЛО views.delete_birthday
+    path('<int:pk>/comment/', views.add_comment, name='add_comment'), # На этот адрес будут отправляться POST-запросы на добавление поздравления.
 ]
