@@ -2,6 +2,7 @@
 # from django.core.paginator import Paginator
 
 # from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.views.generic import (
     CreateView, DeleteView, DetailView, ListView, UpdateView
@@ -47,12 +48,19 @@ class BirthdayDetailView(DetailView):
 #     template_name = 'birthday/birthday.html'
 
 
-class BirthdayCreateView(CreateView):        # БЫЛ еще BirthdayFormMixin и BirthdayMixin в ()
+class BirthdayCreateView(LoginRequiredMixin, CreateView):        # БЫЛ еще BirthdayFormMixin и BirthdayMixin в ()
     model = Birthday
     form_class = BirthdayForm
 
+# задача: передать объект автора записи в объект формы; добавить объект автора в поле author нужно перед сохранением объекта формы.
+    def form_valid(self, form):
+        # Присвоить полю author объект пользователя из запроса.
+        form.instance.author = self.request.user
+        # Продолжить валидацию, описанную в форме.
+        return super().form_valid(form)
 
-class BirthdayUpdateView(UpdateView): # БЫЛ еще BirthdayFormMixin и BirthdayMixin в ()
+
+class BirthdayUpdateView(LoginRequiredMixin, UpdateView): # БЫЛ еще BirthdayFormMixin и BirthdayMixin в ()
     model = Birthday
     form_class = BirthdayForm
 
@@ -163,7 +171,7 @@ class BirthdayUpdateView(UpdateView): # БЫЛ еще BirthdayFormMixin и Birth
 
 
                                                     # НОВОЕ УДАЛЕНИЕ CBV
-class BirthdayDeleteView(DeleteView):
+class BirthdayDeleteView(LoginRequiredMixin, DeleteView):
     model = Birthday
     # template_name = 'birthday/birthday.html'       УБРАЛИ вызов шаблона, п/ч есть шаблон с именем, которое ожидает класс DeleteView
     success_url = reverse_lazy('birthday:list')

@@ -20,7 +20,7 @@ class BirthdayForm(forms.ModelForm):
         # Указываем модель, на основе которой должна строиться форма.
         model = Birthday
         # Указываем, что надо отобразить все поля.
-        fields = '__all__'
+        exclude = ('author',)       #  УБРАЛИ fields = '__all__', чтобы убрать из HTML-формы поле "автор" при создании записи
         widgets = {
             'birthday': forms.DateInput(attrs={'type': 'date'})
         }

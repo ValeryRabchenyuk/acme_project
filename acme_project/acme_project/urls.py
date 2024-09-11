@@ -24,3 +24,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('birthday/', include('birthday.urls')),
 ]
+
+handler404 = 'core.views.page_not_found'
