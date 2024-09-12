@@ -207,6 +207,12 @@ class BirthdayDeleteView(LoginRequiredMixin, DeleteView):
 class BirthdayListView(ListView):
     # Указываем модель, с которой работает CBV...
     model = Birthday
+    # По умолчанию этот класс 
+    # выполняет запрос queryset = Birthday.objects.all(),
+    # но мы его переопределим:
+    queryset = Birthday.objects.prefetch_related(
+        'tags'
+    ).select_related('author')   # select_related() объединит запросы к обеим таблицам — данные об авторах будут загружены одновременно с записями о днях рождения.
     # ...сортировку, которая будет применена при выводе списка объектов:
     ordering = 'id'
     # ...и даже настройки пагинации:
